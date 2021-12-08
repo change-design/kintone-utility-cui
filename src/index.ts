@@ -1,7 +1,7 @@
-import { createKintoeApp } from './kintone'
+import { updateKintoneApp } from './kintone'
 
 const main = async () => {
-  await createKintoeApp()
+  await updateKintoneApp()
 }
 
 ;(async () => {

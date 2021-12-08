@@ -14,7 +14,7 @@ import {
 const { getLogger, openErrorAsHtml } = useLogger()
 const logger = getLogger()
 
-export const createKintoeApp = async () => {
+export const updateKintoneApp = async () => {
   logger.info('ツールを起動します...')
   const { parseConfig, updateAppViews, deployApp } = await setup()
 
