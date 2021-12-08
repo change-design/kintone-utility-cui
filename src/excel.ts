@@ -1,6 +1,12 @@
 import * as XLSX from 'xlsx'
 import { UpdatingAppViews, UpdateAppView } from './types/view'
 
+interface SortDefinition {
+  index: number
+  name: string
+  asc: boolean
+}
+
 export const parseUpdatingAppViewsConfig = (file: string) => {
   // 対象シート取得
   const options = { cellDates: true } // 日付を取得可能とする
@@ -46,10 +52,10 @@ const parseAppViews = (sheet: XLSX.Sheet, range: XLSX.Range) => {
   const startRowOffset = 1
   const startColOffset = 1
   let processingView: UpdateAppView | null = null
+  let sortDefinitions: SortDefinition[] = []
   for (let i = range.s.r + startRowOffset; i <= range.e.r; i++) {
     if (processingView === null) {
       const nameCell = sheet[address(i, range.s.c + startColOffset)]
-      console.log(nameCell.w)
       processingView = {
         index: viewIndex.toString(),
         type: 'LIST',
@@ -67,10 +73,28 @@ const parseAppViews = (sheet: XLSX.Sheet, range: XLSX.Range) => {
         if (name != null) {
           processingView.fields?.push(name)
         }
+        if (sort != null) {
+          sortDefinitions.push(sort)
+        }
       }
+      const sortString = sortDefinitions
+        .sort((a, b) => {
+          if (a.index > b.index) {
+            return 1
+          } else if (a.index < b.index) {
+            return -1
+          }
+          return 0
+        })
+        .map((s) => {
+          return `${s.name} ${s.asc ? 'asc' : 'desc'}`
+        })
+        .join(', ')
+      processingView.sort = sortString
 
       views[processingView.name as string] = processingView
       processingView = null
+      sortDefinitions = []
       viewIndex++
     }
   }
@@ -82,9 +106,18 @@ const parseField = (field: string) => {
   const regex = new RegExp('^(.+?)(#([0-9]+)-(昇順|降順))?$')
   const values = field.match(regex)
   if (values) {
-    console.log(values[1])
-    //TODO
-    return { name: values[1], sort: null }
+    const name = values[1]
+    if (values[3]) {
+      const sort: SortDefinition = {
+        index: parseInt(values[3], 10),
+        name,
+        asc: values[4] === '昇順',
+      }
+
+      return { name, sort }
+    } else {
+      return { name, sort: null }
+    }
   } else {
     return { name: null, sort: null }
   }
