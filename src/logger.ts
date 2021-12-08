@@ -1,33 +1,55 @@
 import * as fs from 'fs'
 import * as url from 'url'
 import winston from 'winston'
-import opener from 'opener'
+import DailyRotateFile from 'winston-daily-rotate-file'
+// import opener from 'opener'
+import open from 'open'
 
-const APP_LOG = 'app.log'
-const ERROR_LOG = 'error.log'
 const ERROR_HTML = 'error.html'
+// logger初期化時に決定
+let actualAppLog = ''
+let actualErrLog = ''
 
+// ログタイムスタンプのタイムゾーン設定
 const timezoned = () => {
   return new Date().toLocaleString('ja-JP', {
     timeZone: 'Asia/Tokyo',
   })
 }
+
+// ログ出力先定義
+const appTransport = new DailyRotateFile({
+  filename: 'app-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxFiles: 10,
+  dirname: 'logs',
+  level: 'info',
+})
+appTransport.on('new', (newFilename) => {
+  actualAppLog = newFilename
+})
+const errTransport = new DailyRotateFile({
+  filename: 'error-%DATE%.log',
+  datePattern: 'YYYY-MM-DD',
+  zippedArchive: true,
+  maxFiles: 10,
+  dirname: 'logs',
+  level: 'error',
+})
+errTransport.on('new', (newFilename) => {
+  actualErrLog = newFilename
+})
+
+// logger初期化
 const logger = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp({ format: timezoned }),
-    // winston.format.cli(),
     winston.format.printf(
       (info) => `[${info.timestamp}] ${info.level} ${info.message}`,
     ),
   ),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
-      filename: APP_LOG,
-      level: 'info',
-    }),
-    new winston.transports.File({ filename: ERROR_LOG, level: 'error' }),
-  ],
+  transports: [new winston.transports.Console(), appTransport, errTransport],
 })
 
 export const useLogger = () => {
@@ -36,24 +58,24 @@ export const useLogger = () => {
   }
 
   const openAppLog = () => {
-    opener(APP_LOG)
+    opener(actualAppLog)
   }
 
   const openErrorLog = () => {
-    opener(ERROR_LOG)
+    opener(actualErrLog)
   }
 
-  const openErrorAsHtml = (...errors: string[]) => {
+  const openErrorAsHtml = async (...errors: string[]) => {
     fs.writeFileSync(ERROR_HTML, createErrorHtml(errors))
-    opener(ERROR_HTML)
+    open(ERROR_HTML.toString())
   }
 
   return { getLogger, openErrorLog, openAppLog, openErrorAsHtml }
 }
 
 const createErrorHtml = (errors: string[]) => {
-  const urlErrorLog = url.pathToFileURL(ERROR_LOG)
-  const urlAppLog = url.pathToFileURL(APP_LOG)
+  const urlAppLog = url.pathToFileURL(actualAppLog)
+  const urlErrorLog = url.pathToFileURL(actualErrLog)
   return `
   <html>
     <head>
