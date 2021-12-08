@@ -1,9 +1,9 @@
 import * as fs from 'fs'
 import * as url from 'url'
+import * as path from 'path'
 import winston from 'winston'
 import DailyRotateFile from 'winston-daily-rotate-file'
-// import opener from 'opener'
-import open from 'open'
+import opener from 'opener'
 
 const ERROR_HTML = 'error.html'
 // logger初期化時に決定
@@ -65,9 +65,12 @@ export const useLogger = () => {
     opener(actualErrLog)
   }
 
-  const openErrorAsHtml = async (...errors: string[]) => {
+  const openErrorAsHtml = (...errors: string[]) => {
     fs.writeFileSync(ERROR_HTML, createErrorHtml(errors))
-    open(ERROR_HTML.toString())
+    opener(ERROR_HTML)
+
+    console.log('エラーファイルを確認してください')
+    console.log(`  ${path.resolve(ERROR_HTML)}`)
   }
 
   return { getLogger, openErrorLog, openAppLog, openErrorAsHtml }
