@@ -1,5 +1,6 @@
 import { UpdateAppViewsResult, UpdatingAppViews } from '../types/view'
 import { getAxios } from './axios'
+import { toKintoneError } from './error'
 
 export interface AppViewRepository {
   update: (views: UpdatingAppViews) => Promise<UpdateAppViewsResult>
@@ -28,9 +29,7 @@ class KintoneAppViewRepository implements AppViewRepository {
 
       return res.data
     } catch (e) {
-      // FIXME
-      console.log(e)
-      throw e
+      return Promise.reject(toKintoneError(e))
     }
   }
 }
