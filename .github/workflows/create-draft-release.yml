@@ -1,0 +1,54 @@
+name: 'Create Draft Release'
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  PACKAGE_NAME: create-kintone-app-views
+
+jobs:
+  release:
+    name: Create draft release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Setup node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create an artifact
+        run: npm run package
+        env:
+          PACKAGE_NAME: ${{ env.PACKAGE_NAME }}
+          TARGET_NODE_VERSION: v16.12.0
+
+      - name: Create draft release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ${{ github.ref }} のリリースです。
+          draft: true
+          prerelease: true
+
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./tmp/${{ env.PACKAGE_NAME }}.zip
+          asset_name: ${{ env.PACKAGE_NAME }}.zip
+          asset_content_type: application/zip
