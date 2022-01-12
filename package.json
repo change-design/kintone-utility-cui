@@ -1,0 +1,51 @@
+{
+  "name": "setup-kintone-app-list-views",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "build": "tsc",
+    "copy-package": "ts-node scripts/prebuild.ts",
+    "postbuild": "npm run copy-package && cd dist && npm ci --only production",
+    "package": "npm run clean && npm run build && ts-node scripts/package.ts",
+    "clean": "rimraf dist tmp",
+    "dev": "ts-node src/index.ts",
+    "dev:watch": "ts-node-dev --respawn src/index.ts",
+    "start": "node ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/archiver": "^5.3.0",
+    "@types/eslint": "^7.28.1",
+    "@types/node": "^16.11.1",
+    "@types/opener": "^1.4.0",
+    "@types/prettier": "^2.4.1",
+    "@types/unzipper": "^0.10.4",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
+    "eslint": "^8.0.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.2",
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.3.0",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^4.4.4",
+    "typesync": "^0.8.0"
+  },
+  "dependencies": {
+    "archiver": "^5.3.0",
+    "axios": "^0.21.4",
+    "form-data": "^4.0.0",
+    "install": "^0.13.0",
+    "opener": "^1.5.2",
+    "unzipper": "^0.10.11",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5",
+    "xlsx": "^0.17.4"
+  }
+}
