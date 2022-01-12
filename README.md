@@ -1,29 +1,19 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+## このツールは何？
+- 普段の業務を「ちょこっと」効率アップするためのコマンドラインツールを公開しています。
+- 今回は、サイボウズ社のクラウドサービス「kintone」（https://kintone.cybozu.co.jp/ ）を導入・利用されている方向けのツールです。
 
-### What is this repository for? ###
+## できること
+- kintoneアプリの「一覧」内容を、Excelファイルに記載して作成・更新することができます。
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## 技術要素
+- Node.jsを使用したクライアントアプリケーションとして作成しています。
+- ログライブラリに「Winston」、Excel操作に「SheetJS」を使用しています。
 
-### How do I get set up? ###
+## セットアップや使い方
+- 次URLを参照ください。
+  - [株式会社チェンジデザイン ブログ：当社の業務支援ツールを無料でご提供【その１】](https://www.change-d.co.jp/business-support-tools/it-tool-20220110/)
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+# 一言
+- kintone REST API、WinstonやSheetJSなどの使い方サンプル（学習題材）としても活用いただければ何よりです。
